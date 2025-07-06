@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Biblioteca Pessoal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container my-4">
+
+<h1 class="mb-4">📚 Biblioteca Pessoal - Lucas</h1>
+
+<!-- Formulário de Adição -->
+<div class="card mb-4">
+    <div class="card-header">Adicionar Livro</div>
+    <div class="card-body">
+        <form th:action="@{/livros}" method="post" th:object="${livro}" class="row g-2">
+            <div class="col-md-4">
+                <input type="text" th:field="*{titulo}" class="form-control" placeholder="Título" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" th:field="*{autor}" class="form-control" placeholder="Autor" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" th:field="*{editora}" class="form-control" placeholder="Editora" required>
+            </div>
+            <div class="col-md-3">
+                <input type="number" th:field="*{anoPublicacao}" class="form-control" placeholder="Ano" required>
+            </div>
+            <div class="col-md-3">
+                <input type="number" th:field="*{qtdePaginas}" class="form-control" placeholder="Páginas" required>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Buscar -->
+<div class="mb-4">
+    <form th:action="@{/livros/buscar-autor}" method="post" class="d-inline">
+        <input type="text" name="autor" placeholder="Buscar por autor" class="form-control d-inline w-auto">
+        <button class="btn btn-outline-secondary">Buscar</button>
+    </form>
+    <form th:action="@{/livros/buscar-editora}" method="post" class="d-inline ms-2">
+        <input type="text" name="editora" placeholder="Buscar por editora" class="form-control d-inline w-auto">
+        <button class="btn btn-outline-secondary">Buscar</button>
+    </form>
+    <a th:href="@{/livros}" class="btn btn-link ms-3">Listar Todos</a>
+</div>
+
+<!-- Lista de Livros -->
+<div class="card">
+    <div class="card-header">Lista de Livros</div>
+    <ul class="list-group list-group-flush">
+        <li th:each="livro : ${livros}" class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong th:text="${livro.titulo}"></strong> -
+                <span th:text="${livro.autor}"></span> (
+                <span th:text="${livro.anoPublicacao}"></span>)<br>
+                <small>
+                    Editora: <span th:text="${livro.editora}"></span> |
+                    Páginas: <span th:text="${livro.qtdePaginas}"></span>
+                </small>
+            </div>
+            <form th:action="@{/livros/excluir/{id}(id=${livro.id})}" method="post">
+                <button class="btn btn-danger btn-sm">Excluir</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<!-- Paginação -->
+<nav th:if="${totalPaginas > 1}" class="mt-3">
+    <ul class="pagination">
+        <li class="page-item" th:classappend="${paginaAtual == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/livros(pagina=${paginaAtual - 1})}">Anterior</a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}"
+            class="page-item" th:classappend="${i == paginaAtual} ? 'active'">
+            <a class="page-link" th:href="@{/livros(pagina=${i})}" th:text="${i + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${paginaAtual + 1 == totalPaginas} ? 'disabled'">
+            <a class="page-link" th:href="@{/livros(pagina=${paginaAtual + 1})}">Próxima</a>
+        </li>
+    </ul>
+</nav>
+
+</body>
+</html>
